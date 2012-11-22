@@ -44,7 +44,7 @@ modules.builtin
 /System.map
 /Module.markers
 /Module.symvers
-makekernel.sh
+/makekernel
 
 #
 # git files that we don't want to ignore even it they are dot-files
@@ -84,11 +84,7 @@ arch/arm/mach-msm/smd_rpc_sym.c
 arch/arm/boot/compressed/ashldi3.S
 arch/arm/boot/compressed/piggy.xzkern
 arch/arm/boot/Image
-arch/arm/boot/compressed/lib1funcs.S
-arch/arm/boot/compressed/vmlinux
-arch/arm/boot/compressed/vmlinux.lds
 arch/arm/boot/zImage
-arch/arm/kernel/vmlinux.lds
 
 *.orig
 *~
