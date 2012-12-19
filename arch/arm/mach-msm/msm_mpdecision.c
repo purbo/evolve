@@ -33,6 +33,7 @@
 #include <linux/delay.h>
 
 #include "acpuclock.h"
+#define DEBUG 1
 
 #define MPDEC_TAG                       "[MPDEC]: "
 #define MSM_MPDEC_STARTDELAY            70000
@@ -109,6 +110,9 @@ static int mp_decision(void)
 
 	rq_depth = get_rq_info();
 	nr_cpu_online = num_online_cpus();
+#if DEBUG
+        pr_info(MPDEC_TAG"[DEBUG]: RQ: %u, cpus_on: %i", rq_depth, nr_cpu_online);
+#endif
 
 	if (nr_cpu_online) {
 		index = (nr_cpu_online - 1) * 2;
