@@ -607,6 +607,65 @@ static ssize_t show_max_freq(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%lu\n", to_devfreq(dev)->max_freq);
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t show_available_freqs(struct device *d,
+				    struct device_attribute *attr,
+				    char *buf)
+{
+	struct devfreq *df = to_devfreq(d);
+	int index, num_chars = 0;
+
+	for (index = 0; index < df->profile->max_state; index++)
+		num_chars += snprintf(buf + num_chars, PAGE_SIZE, "%d ",
+		df->profile->freq_table[index]);
+	buf[num_chars++] = '\n';
+
+	return num_chars;
+}
+
+static ssize_t show_trans_table(struct device *dev, struct device_attribute *attr,
+				char *buf)
+{
+	struct devfreq *devfreq = to_devfreq(dev);
+	ssize_t len;
+	int i, j, err;
+	unsigned int max_state = devfreq->profile->max_state;
+
+	err = devfreq_update_status(devfreq, devfreq->previous_freq);
+	if (err)
+		return 0;
+
+	len = sprintf(buf, "   From  :   To\n");
+	len += sprintf(buf + len, "         :");
+	for (i = 0; i < max_state; i++)
+		len += sprintf(buf + len, "%8u",
+				devfreq->profile->freq_table[i]);
+
+	len += sprintf(buf + len, "   time(ms)\n");
+
+	for (i = 0; i < max_state; i++) {
+		if (devfreq->profile->freq_table[i]
+					== devfreq->previous_freq) {
+			len += sprintf(buf + len, "*");
+		} else {
+			len += sprintf(buf + len, " ");
+		}
+		len += sprintf(buf + len, "%8u:",
+				devfreq->profile->freq_table[i]);
+		for (j = 0; j < max_state; j++)
+			len += sprintf(buf + len, "%8u",
+				devfreq->trans_table[(i * max_state) + j]);
+		len += sprintf(buf + len, "%10u\n",
+			jiffies_to_msecs(devfreq->time_in_state[i]));
+	}
+
+	len += sprintf(buf + len, "Total transition : %u\n",
+					devfreq->total_trans);
+	return len;
+}
+
+>>>>>>> d91b216... PM: devfreq: Fix show available freqs
 static struct device_attribute devfreq_attrs[] = {
 	__ATTR(governor, S_IRUGO, show_governor, NULL),
 	__ATTR(cur_freq, S_IRUGO, show_freq, NULL),
