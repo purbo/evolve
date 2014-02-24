@@ -29,14 +29,14 @@
 #define INTELLI_PLUG_MAJOR_VERSION	2
 #define INTELLI_PLUG_MINOR_VERSION	0
 
-#define DEF_SAMPLING_MS			(1000)
-#define BUSY_SAMPLING_MS		(500)
+#define DEF_SAMPLING_MS			(500)
+#define BUSY_SAMPLING_MS		(250)
 
-#define DUAL_CORE_PERSISTENCE		7
-#define TRI_CORE_PERSISTENCE		5
-#define QUAD_CORE_PERSISTENCE		3
+#define DUAL_CORE_PERSISTENCE		14
+#define TRI_CORE_PERSISTENCE		10
+#define QUAD_CORE_PERSISTENCE		6
 
-#define BUSY_PERSISTENCE		10
+#define BUSY_PERSISTENCE		20
 
 #define RUN_QUEUE_THRESHOLD		38
 
@@ -198,7 +198,7 @@ static void __cpuinit intelli_plug_work_fn(struct work_struct *work)
 				case 1:
 					cpu_count = 2;
 #ifdef DEBUG_INTELLI_PLUG
-					pr_info("nr_run(2) => %u\n", nr_run_stat);
+					pr_info("nr_run(1) => %u\n", nr_run_stat);
 #endif
 					break;
 				}
@@ -236,40 +236,14 @@ static void __cpuinit intelli_plug_work_fn(struct work_struct *work)
 				if (!decision)
 					persist_count = DUAL_CORE_PERSISTENCE / CPU_DOWN_FACTOR;
 				if (nr_cpus < 1) {
-					for (i = 2; i < cpu_count; i++)
+					for (i = 1; i < cpu_count; i++)
 						cpu_up(i);
 				} else {
-					for (i = 2; i > 1; i--)
+					for (i = 2; i >  1; i--)
 						cpu_down(i);
 				}
 #ifdef DEBUG_INTELLI_PLUG
 				pr_info("case 2: %u\n", persist_count);
-#endif
-				break;
-			case 3:
-				persist_count = TRI_CORE_PERSISTENCE;
-				if (!decision)
-					persist_count = TRI_CORE_PERSISTENCE / CPU_DOWN_FACTOR;
-				if (nr_cpus < 3) {
-					for (i = 1; i < cpu_count; i++)
-						cpu_up(i);
-				} else {
-					for (i = 3; i > 2; i--)
-						cpu_down(i);
-				}
-#ifdef DEBUG_INTELLI_PLUG
-				pr_info("case 3: %u\n", persist_count);
-#endif
-				break;
-			case 4:
-				persist_count = QUAD_CORE_PERSISTENCE;
-				if (!decision)
-					persist_count = QUAD_CORE_PERSISTENCE / CPU_DOWN_FACTOR;
-				if (nr_cpus < 4)
-					for (i = 1; i < cpu_count; i++)
-						cpu_up(i);
-#ifdef DEBUG_INTELLI_PLUG
-				pr_info("case 4: %u\n", persist_count);
 #endif
 				break;
 			default:
@@ -291,7 +265,7 @@ static void intelli_plug_early_suspend(struct early_suspend *handler)
 {
 	int i;
 	int num_of_active_cores = 2;
-
+	
 	cancel_delayed_work_sync(&intelli_plug_work);
 
 	mutex_lock(&intelli_plug_mutex);
@@ -357,6 +331,7 @@ static int input_dev_filter(const char *input_dev_name)
 	if (strstr(input_dev_name, "touchscreen") ||
 		strstr(input_dev_name, "sec_touchscreen") ||
 		strstr(input_dev_name, "touch_dev") ||
+		strstr(input_dev_name, "Atmel maXTouch Touchscreen") ||
 		strstr(input_dev_name, "-keypad") ||
 		strstr(input_dev_name, "-nav") ||
 		strstr(input_dev_name, "-oj")) {
