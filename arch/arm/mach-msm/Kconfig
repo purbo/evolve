@@ -1615,6 +1615,13 @@ config MSM_MPDEC
 	  This enables kernel based multi core control.
 	  (up/down hotplug based on load)
 
+config OC_ULTIMATE
+	bool "allow 2.052 GHz max OC option"
+	default n
+	help
+	Unlock the ultimate Overclock freq speed @ 2.052 GHz
+
+
 if CPU_FREQ_MSM
 
 config MSM_CPU_FREQ_SET_MIN_MAX
