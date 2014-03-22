@@ -210,6 +210,7 @@ static struct clkctl_l2_speed l2_freq_tbl_v2[] = {
 };
 
 #define L2(x) (&l2_freq_tbl_v2[(x)])
+#ifdef CONFIG_OC_NORMAL
 /* SCPLL frequencies = 2 * 27 MHz * L_VAL */
 static struct clkctl_acpu_speed acpu_freq_tbl_1188mhz[] = {
   { {1, 1},  192000,  ACPU_PLL_8, 3, 1, 0, 0,    L2(1),   812500, 0x03006000},
@@ -456,7 +457,7 @@ static struct clkctl_acpu_speed acpu_freq_tbl_1674mhz_fast[] = {
   { {0, 0}, 0 },
 };
 
-
+#else
 static struct clkctl_acpu_speed acpu_freq_tbl_oc[] = {
   { {1, 1}, 192000, ACPU_PLL_8, 3, 1, 0, 0, L2(1), 800000, 0x03006000},
   /* MAX_AXI row is used to source CPU cores and L2 from the AFAB clock. */
@@ -497,7 +498,7 @@ static struct clkctl_acpu_speed acpu_freq_tbl_oc[] = {
 #endif
   { {0, 0}, 0 },
 };
-
+#endif
 
 
 /* acpu_freq_tbl row to use when reconfiguring SC/L2 PLLs. */
@@ -1107,7 +1108,7 @@ uint32_t acpu_check_khz_value(unsigned long khz)
         if (khz >= 1512000)
                 return CONFIG_MSM_CPU_FREQ_MAX;
 
-        for (f = acpu_freq_tbl_1512mhz_fast; f->acpuclk_khz != 0; f++) {
+        for (f = acpu_freq_tbl_oc; f->acpuclk_khz != 0; f++) {
                 if ((khz < 384000) && (f->acpuclk_khz == (khz*1000))) {
                         return f->acpuclk_khz;
                 }
@@ -1139,7 +1140,7 @@ static __init struct clkctl_acpu_speed *select_freq_plan(void)
 	max_khz = 2052000;
 	pr_info("ACPU PVS: Ultimate OC\n");
 #else
-	max_khz = 1728000;
+	max_khz = 1890000;
 	pr_info("ACPU PVS: OC\n");
 #endif
 
