@@ -2870,7 +2870,6 @@ static int mdp4_calc_req_blt(struct msm_fb_data_type *mfd,
 			     struct mdp_overlay *req)
 {
 	int ret = 0;
-	int clk = 0;
 
 	if (!req) {
 		pr_err("%s: req is null!\n", __func__);
@@ -2882,14 +2881,10 @@ static int mdp4_calc_req_blt(struct msm_fb_data_type *mfd,
 		return ret;
 	}
 
-	clk = mdp4_calc_req_mdp_clk
+	if (mdp4_calc_req_mdp_clk
 		(mfd, req->src_rect.h, req->dst_rect.h,
-		 req->src_rect.w, req->dst_rect.w);
-
-	if (clk > mdp_max_clk * 2) {
-		pr_err("%s: blt required, clk=%d max=%d", clk, mdp_max_clk * 2);
+		 req->src_rect.w, req->dst_rect.w) > mdp_max_clk)
 		ret = -EINVAL;
-	}
 
 	return ret;
 }
@@ -3076,7 +3071,6 @@ int mdp4_overlay_mdp_perf_req(struct msm_fb_data_type *mfd)
 	u32 worst_mdp_clk = 0;
 	int i;
 	struct mdp4_overlay_perf *perf_req = &perf_request;
-	struct mdp4_overlay_perf *perf_cur = &perf_current;
 	struct mdp4_overlay_pipe *pipe;
 	u32 cnt = 0;
 	int ret = -EINVAL;
